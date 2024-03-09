@@ -1,25 +1,32 @@
 name: Mod Build
-on: [ push, pull_request ]
+on:
+- push
+- pull_request
+- workflow_dispatch
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/setup-java@v4
+    - name: Setup jdk 17
+      uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
         java-version: '17'
-    - uses: actions/checkout@v4
-    - uses: gradle/wrapper-validation-action@v1
-    - uses: burrunan/gradle-cache-action@v1
-      name: Build Identity Mod
+    - name: Checkout repo
+      uses: actions/checkout@v4
+    - name: Verity gradle wrapper
+      uses: gradle/wrapper-validation-action@v1
+    - name: Build and cache files
+      uses: burrunan/gradle-cache-action@v1
       with:
         job-id: jdk17
         arguments: check build publishToMavenLocal --stacktrace --parallel
         gradle-version: wrapper
-    - run: mkdir -p .build_files && cp */build/libs/*-{forge,fabric}.jar .build_files/
-      name: Collect building result
-    - uses: actions/upload-artifact@v4
+    - name: Collect building results
+      run: mkdir -p .build_files && cp */build/libs/*-{forge,fabric}.jar .build_files/
+    - name: Upload building results
+      uses: actions/upload-artifact@v4
       with:
         name: Artifacts
         path: .build_files/*.jar
