@@ -25,6 +25,7 @@ public abstract class ShadowMixin {
     private static Entity identity_shadowEntity;
 
     @Inject(
+            require = 0,
             method = "renderShadow",
             at = @At("HEAD"))
     private static void storeContext(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, float opacity, float tickDelta, WorldView world, float radius, CallbackInfo ci) {
@@ -32,6 +33,7 @@ public abstract class ShadowMixin {
     }
 
     @ModifyVariable(
+            require = 0,
             method = "renderShadow",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(DDD)D", ordinal = 0), index = 7)
     private static float adjustShadowSize(float originalSize) {
