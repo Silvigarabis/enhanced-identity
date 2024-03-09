@@ -1,0 +1,25 @@
+name: Mod Build Manually
+on: [ workflow_dispatch ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+    - uses: actions/checkout@v4
+    - uses: gradle/wrapper-validation-action@v1
+    - uses: burrunan/gradle-cache-action@v1
+      name: Build Identity Mod
+      with:
+        job-id: jdk17
+        arguments: check build publishToMavenLocal --stacktrace --parallel
+        gradle-version: wrapper
+    - run: mkdir -p .build_files && cp */build/libs/*-{forge,fabric}.jar .build_files/
+      name: Collect building result
+    - uses: actions/upload-artifact@v4
+      with:
+        name: Artifacts
+        path: .build_files/*.jar
